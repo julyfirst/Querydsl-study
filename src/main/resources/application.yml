@@ -1,0 +1,19 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/querydsl_study?serverTimezone=UTC&characterEncoding=UTF-8
+    username: sanghyunlee
+    password: 1234
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  #create
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        #show_sql: true // system.out 출력 로그
+        format_sql: true
+        use_sql_comments: true # query dsl 로그
+logging:
+  level:
+    org.hibernate.SQL: debug #log로 query 출력
+    org.hibernate.type: trace #성능이 중요하면 남기지 않는다
