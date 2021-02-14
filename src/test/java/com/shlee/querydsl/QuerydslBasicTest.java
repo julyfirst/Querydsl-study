@@ -820,6 +820,31 @@ public class QuerydslBasicTest {
 
     }
 
+    @Test
+    public void sqlFunction() {
+        List<String> result = queryFactory
+                .select(Expressions.stringTemplate(
+                        "function('regexp_replace', {0}, {1}, {2})",
+                        member.username, "member", "M"))
+                .from(member)
+                .fetch();
 
+        result.forEach(s ->
+                        System.out.println("resultSQLFunction = " + s));
+    }
+
+    @Test
+    public void sqlFunction2() {
+        List<String> fetch = queryFactory
+                .select(member.username)
+                .from(member)
+//                .where(member.username.eq(
+//                        Expressions.stringTemplate("function('lower',{0})", member.username)))
+                .where(member.username.eq(member.username.lower())) // ANSI 표준
+                .fetch();
+        fetch.forEach(result ->
+                        System.out.println("result = " + result)
+        );
+    }
 }
 
