@@ -26,6 +26,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Commit;
 import org.springframework.transaction.annotation.Transactional;
 
 import static com.shlee.querydsl.entity.QMember.*;
@@ -733,6 +734,12 @@ public class QuerydslBasicTest {
         assertThat(result.size()).isEqualTo(1);
     }
 
+    /**
+     * 조금더 직관적으로 조건을 볼 수 있어 BooleanBuilder보다 깔끔
+     * @param usernameCond
+     * @param ageCond
+     * @return
+     */
     private List<Member> searchMember2(String usernameCond, Integer ageCond) {
 
         return queryFactory
@@ -758,5 +765,61 @@ public class QuerydslBasicTest {
     private Predicate allEq(String usernameCond, Integer ageCond) {
         return usernameEq(usernameCond).and(ageEq(ageCond));
     }
+
+    // 벌크 연산 -> 한번 에처리
+    @Test
+    @Commit
+    public void bulkUpdate() {
+        // member1 = 10 -> 비회원
+        // member2 = 20 -> 비회원
+        // member3 = 30 -> member3
+        // member4 = 40 -> member4
+
+        long count = queryFactory
+                .update(member)
+                .set(member.username, "비회원")
+                .where(member.age.lt(28))
+                .execute();
+        em.flush();
+        em.clear();
+        // member1 = 10 -> 비회원
+        // member2 = 20 -> 비회원
+        // member3 = 30 -> member3
+        // member4 = 40 -> member4
+
+        List<Member> result = queryFactory
+                .selectFrom(member)
+                .fetch();
+
+        for (Member member1 : result) {
+            System.out.println("member1 = " + member1);
+        }
+    }
+
+    /**
+     * bulk 더하기
+     */
+    @Test
+    public void bulkAdd() {
+        long count = queryFactory
+                .update(member)
+                .set(member.age, member.age.add(1))
+                .execute();
+
+    }
+
+    /**
+     * 18살이상 모든 회원 삭제
+     */
+    @Test
+    public void bulkDelete() {
+        queryFactory
+                .delete(member)
+                .where(member.age.gt(18))
+                .execute();
+
+    }
+
+
 }
 
