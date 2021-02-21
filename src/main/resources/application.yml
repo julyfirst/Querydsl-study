@@ -1,5 +1,5 @@
 spring:
-  profiles:
+  profiles: # 개발 dev, 실제 real 로 많이씀
     active: local
   datasource:
     url: jdbc:mysql://localhost:3306/querydsl_study?serverTimezone=UTC&characterEncoding=UTF-8
